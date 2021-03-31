@@ -8,7 +8,18 @@
     <i-button disabled>禁用按钮</i-button>
     <component-a ref="comA" />
     <component-b />
-    <HelloWorld msg="你好，Vue3!" />
+    <div style="padding: 10px;background: orangered;">
+      <i-form :model="formValidate" :rules="ruleValidate" ref="form">
+        <i-form-item label="用户名" prop="name">
+          <i-input v-model="formValidate.name" placeholder="请输入用户名" />
+        </i-form-item>
+        <i-form-item label="邮箱" prop="mail">
+          <i-input v-model="formValidate.mail" placeholder="请输入邮箱" />
+        </i-form-item>
+      </i-form>
+      <i-button @on-click="handleSubmit">提交</i-button>
+    </div>
+<!--    <HelloWorld msg="你好，Vue3!" />-->
   </div>
 </template>
 
@@ -18,6 +29,9 @@ import HelloWorld from '../components/HelloWorld.vue'
 import IButton from '../components/IButton.vue'
 import ComponentA from '../components/ComponentA.vue'
 import ComponentB from '../components/ComponentB.vue'
+import IForm from '../components/form/Form.vue'
+import IFormItem from '../components/form/FormItem.vue'
+import IInput from '../components/Input.vue'
 
 export default {
   name: 'About',
@@ -28,12 +42,32 @@ export default {
     HelloWorld,
     IButton,
     ComponentA,
-    ComponentB
+    ComponentB,
+    IForm,
+    IFormItem,
+    IInput
   },
   setup() {
     login({userName: 'lincychu', password: 'zdp1985@0829'}).then(data => {
       console.log(data)
     }, err => {})
+  },
+  data() {
+    return {
+      formValidate: {
+        name: '',
+        mail: ''
+      },
+      ruleValidate: {
+        name: [
+          { required: true, message: '用户名不能为空', trigger: 'blur' }
+        ],
+        mail: [
+          { required: true, message: '邮箱不能为空', trigger: 'blur' },
+          { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+        ]
+      }
+    }
   },
   mounted () {
     this.$nextTick(() => {
@@ -53,6 +87,15 @@ export default {
        */
       const title = this.$refs.comA.title
       console.log('title', title)
+    },
+    handleSubmit() {
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          window.alert('提交成功');
+        } else {
+          window.alert('表单校验失败');
+        }
+      })
     }
   }
 }
